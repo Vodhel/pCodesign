@@ -78,17 +78,17 @@ void InitHostMem(float *Layer1_Weights_CPU,float *Layer2_Weights_CPU, float *Lay
 
 int main()
 {
+
+	//printf("test\n");
 	XTime tStart, tEnd;
-
-
 	init_platform();
 
 
-	float
+	/*float
 		Layer1_Weights_CPU[(5*5+1)*6],
 		Layer2_Weights_CPU[(5*5+1)*6*50],
 		Layer3_Weights_CPU[(5*5*50+1)*100],
-		Layer4_Weights_CPU[(100+1)*10];
+		Layer4_Weights_CPU[(100+1)*10];*/
 
 	float
 		Layer1_Neurons_CPU[IMGWIDTH*IMGHEIGHT],
@@ -202,62 +202,78 @@ int main()
 */
 	};
 
-	InitHostMem(Layer1_Weights_CPU,Layer2_Weights_CPU,Layer3_Weights_CPU,Layer4_Weights_CPU);
+	//InitHostMem(Layer1_Weights_CPU,Layer2_Weights_CPU,Layer3_Weights_CPU,Layer4_Weights_CPU);
 
 
 
 
 
-    print("timer 1 on :");
+    //print("timer 1 on :");
 	XTime_GetTime(&tStart);
     calculateLayer1(Input, Layer1_Neurons_CPU);
 	XTime_GetTime(&tEnd);
-	printf("timer couche 1: output took %llu clock cycles.\n", 2*(tEnd - tStart));
-	printf("Output took %.2f us.\n", 1.0 * (tEnd - tStart) / (COUNTS_PER_SECOND/1000000));
+	double time_1 = 1.0 * (tEnd-tStart )/ (COUNTS_PER_SECOND/1000000);
 
-    print("timer 2 on :");
+
+    //print("timer 2 on :");
     XTime_GetTime(&tStart);
     calculateLayer2(Layer1_Neurons_CPU, Layer1_Weights_CPU, Layer2_Neurons_CPU);
 	XTime_GetTime(&tEnd);
-	printf("timer couche 2: output took %llu clock cycles.\n", 2*(tEnd - tStart));
-	printf("Output took %.2f us.\n", 1.0 * (tEnd - tStart) / (COUNTS_PER_SECOND/1000000));
+	XTime time_2 = tEnd-tStart;
 
-    print("timer 3 on :");
+
+    //print("timer 3 on :");
     XTime_GetTime(&tStart);
 	calculateLayer3(Layer2_Neurons_CPU, Layer2_Weights_CPU, Layer3_Neurons_CPU);
 	XTime_GetTime(&tEnd);
-	printf("timer couche 3: output took %llu clock cycles.\n", 2*(tEnd - tStart));
-	printf("Output took %.2f us.\n", 1.0 * (tEnd - tStart) / (COUNTS_PER_SECOND/1000000));
+	XTime time_3 = tEnd-tStart;
 
-	print("timer 4 on :");
+
+	//print("timer 4 on :");
     XTime_GetTime(&tStart);
 	calculateLayer4(Layer3_Neurons_CPU, Layer3_Weights_CPU, Layer4_Neurons_CPU);
 	XTime_GetTime(&tEnd);
-	printf("timer couche 4: output took %llu clock cycles.\n", 2*(tEnd - tStart));
-	printf("Output took %.2f us.\n", 1.0 * (tEnd - tStart) / (COUNTS_PER_SECOND/1000000));
+	XTime time_4 = tEnd-tStart;
 
-    print("timer 5 on :");
+
+    //print("timer 5 on :");
     XTime_GetTime(&tStart);
 	calculateLayer5(Layer4_Neurons_CPU, Layer4_Weights_CPU, Layer5_Neurons_CPU);
 	XTime_GetTime(&tEnd);
-	printf("timer couche 5: output took %llu clock cycles.\n", 2*(tEnd - tStart));
-	printf("Output took %.2f us.\n", 1.0 * (tEnd - tStart) / (COUNTS_PER_SECOND/1000000));
+	XTime time_5 = tEnd-tStart;
 
 
 	scoremax = FLT_MIN;
 	int indexmax=-1;
 	for(i=0;i<10;i++)
 	{
-		printf("%d : %f\n",i,Layer5_Neurons_CPU[i]);
+		xil_printf("%d : %f\n",i,Layer5_Neurons_CPU[i]);
 		if(Layer5_Neurons_CPU[i]>scoremax)
 		{
 			scoremax = Layer5_Neurons_CPU[i];
 			indexmax = i;
 		}
 	}
-	printf("Le resultat est : %d \n",indexmax);
+	xil_printf("Le resultat est : %d \n",indexmax);
 
     cleanup_platform();
+
+
+	xil_printf("timer couche 1: output took %llu clock cycles.\n", 2*time_1);
+	xil_printf("Output took %.2f us.\n", time_1 );
+
+	/*xil_printf("timer couche 2: output took %llu clock cycles.\n", 2*time_2);
+	xil_printf("Output took %.2f us.\n", 1.0 * time_2 / (COUNTS_PER_SECOND/1000000));
+
+	xil_printf("timer couche 3: output took %llu clock cycles.\n", 2*time_3);
+	xil_printf("Output took %.2f us.\n", 1.0 * time_3 / (COUNTS_PER_SECOND/1000000));
+
+	xil_printf("timer couche 4: output took %llu clock cycles.\n", 2*time_4);
+	xil_printf("Output took %.2f us.\n", 1.0 * time_4 / (COUNTS_PER_SECOND/1000000));
+
+	xil_printf("timer couche 5: output took %llu clock cycles.\n", 2*time_5);
+	xil_printf("Output took %.2f us.\n", 1.0 * time_5 / (COUNTS_PER_SECOND/1000000));*/
+
     return 0;
 }
 
